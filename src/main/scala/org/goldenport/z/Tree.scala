@@ -5,25 +5,25 @@ import Scalaz._
 
 /**
  * @since   Jan. 14, 2012
- * @version Jan. 14, 2012
+ * @version Jan. 16, 2012
  * @author  ASAMI, Tomoharu
  */
 trait ZTrees {
   def traverse[T, U](tree: Tree[T],
-      enter: PartialFunction[Tree[T], U],
+      enter: PartialFunction[Tree[T], U])(
       leave: PartialFunction[Tree[T], U] = Map.empty[Tree[T], U])(implicit mo: Monoid[U]): U = {
-    foldTraverse(tree, mo.zero, enter, leave)
+    foldTraverse(tree, mo.zero)(enter, leave)
   }
 
   def foldTraverse[T, U: Monoid](tree: Tree[T],
-      monoid: U,
+      monoid: U)(
       enter: PartialFunction[Tree[T], U],
       leave: PartialFunction[Tree[T], U] = Map.empty[Tree[T], U]): U = {
     val m1 = if (enter.isDefinedAt(tree)) {
       monoid |+| enter(tree)
     } else monoid
     val m2 = tree.subForest.foldl(m1) {
-      (m, t) => foldTraverse(t, m, enter, leave)
+      (m, t) => foldTraverse(t, m)(enter, leave)
     }
     if (leave.isDefinedAt(tree)) {
       m2 |+| leave(tree)
@@ -78,7 +78,7 @@ trait ZTrees {
     }
   }
 
-  def transform[T, U](tree: Tree[T],
+  def transform[T, U](tree: Tree[T])(
       f: (T, Stream[Tree[T]]) => (U, Stream[Tree[U]])): Tree[U] = {
     val (r, cs) = f(tree.rootLabel, tree.subForest)
     if (cs.isEmpty) r.leaf
@@ -88,6 +88,11 @@ trait ZTrees {
   def find[T](tree: Tree[T])(p: Tree[T] => Boolean): Option[Tree[T]] = {
     if (p(tree)) tree.some
     else tree.subForest.find(p)
+  }
+
+  def collect[T, U](tree: Tree[T])(
+      pf: PartialFunction[Tree[T], U]): Stream[U] = {
+    collectDeep(tree)(pf)
   }
 
   def collectDeep[T, U](tree: Tree[T])(
