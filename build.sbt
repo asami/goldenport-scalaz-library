@@ -2,15 +2,13 @@ organization := "org.goldenport"
 
 name := "scalazlib"
 
-version := "0.1.0-SNAPSHOT"
+version := "0.1.1-SNAPSHOT"
 
 scalaVersion := "2.9.1"
 
 scalacOptions += "-deprecation"
 
 scalacOptions += "-unchecked"
-
-resolvers += "Local Maven Repository" at "file://"+Path.userHome.absolutePath+"/.m2/repository"
 
 resolvers += "Asami Maven Repository" at "http://www.asamioffice.com/maven"
 

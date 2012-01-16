@@ -84,6 +84,27 @@ trait ZTrees {
     if (cs.isEmpty) r.leaf
     else r.node(cs.toArray: _*)
   }
+
+  def find[T](tree: Tree[T])(p: Tree[T] => Boolean): Option[Tree[T]] = {
+    if (p(tree)) tree.some
+    else tree.subForest.find(p)
+  }
+
+  def collectDeep[T, U](tree: Tree[T])(
+      pf: PartialFunction[Tree[T], U]): Stream[U] = {
+    def children = tree.subForest.flatMap(c => collectDeep(c)(pf))
+    if (pf.isDefinedAt(tree)) {
+      Stream.cons(pf(tree) , children)
+    } else {
+      children
+    }
+  }
+
+  def collectFirst[T, U](tree: Tree[T])(
+      pf: PartialFunction[Tree[T], U]): Option[U] = {
+    if (pf.isDefinedAt(tree)) pf(tree).some
+    else tree.subForest.collectFirst(pf)
+  }
 }
 
 object ZTrees extends ZTrees
