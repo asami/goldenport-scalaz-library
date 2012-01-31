@@ -5,7 +5,7 @@ import Scalaz._
 
 /**
  * @since   Jan. 14, 2012
- * @version Jan. 16, 2012
+ * @version Jan. 31, 2012
  * @author  ASAMI, Tomoharu
  */
 trait ZTrees {
@@ -109,6 +109,45 @@ trait ZTrees {
       pf: PartialFunction[Tree[T], U]): Option[U] = {
     if (pf.isDefinedAt(tree)) pf(tree).some
     else tree.subForest.collectFirst(pf)
+  }
+
+  def collectPath[T, U](tree: Tree[T])(
+      pf: PartialFunction[Tree[T], U])
+      (implicit op: ZPathClass[T]): Stream[(String, U)] = {
+    collectZPath(tree)(pf).map {
+      case (p, n) => (p.toString, n)
+    }
+  }
+
+  def collectZPath[T, U](tree: Tree[T])(
+      pf: PartialFunction[Tree[T], U])
+      (implicit op: ZPathClass[T]): Stream[(ZPath, U)] = {
+    val name = op.name(tree.rootLabel)
+    val path = ZPath(name)
+    if (pf.isDefinedAt(tree)) {
+      Stream.cons((path, pf.apply(tree)), collectZPathChildren(name, tree)(pf)(op))
+    } else {
+      collectZPathChildren(name, tree)(pf)(op)
+    }
+  }
+
+  def collectZPath[T, U](path: ZPath, tree: Tree[T])(
+      pf: PartialFunction[Tree[T], U])
+      (implicit op: ZPathClass[T]): Stream[(ZPath, U)] = {
+    val name = op.name(tree.rootLabel)
+    val npath = path / name
+    if (pf.isDefinedAt(tree)) {
+      Stream.cons((npath, pf.apply(tree)), collectZPathChildren[T, U](path, tree)(pf)(op))
+    } else {
+      collectZPathChildren[T, U](path, tree)(pf)(op)
+    }    
+  }
+
+  def collectZPathChildren[T, U](path: ZPath, tree: Tree[T])(
+      pf: PartialFunction[Tree[T], U])
+      (implicit op: ZPathClass[T]): Stream[(ZPath, U)] = {
+    val npath = path / op.name(tree.rootLabel)
+    tree.subForest.flatMap(collectZPath(npath, _)(pf)(op))
   }
 }
 
