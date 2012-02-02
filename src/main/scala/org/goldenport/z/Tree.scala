@@ -170,8 +170,10 @@ trait ZTrees {
   def collectZPathT[T, U](path: ZPath, tree: Tree[T])(
       pf: PartialFunction[Tree[T], U])
       (implicit op: ZPathClass[T]): Stream[(ZPath, U)] = {
+    val name = op.name(tree.rootLabel)
+    val cp = path / name
     if (pf.isDefinedAt(tree)) {
-      Stream.cons((path, pf.apply(tree)), collectZPathChildrenT[T, U](path, tree)(pf)(op))
+      Stream.cons((cp, pf.apply(tree)), collectZPathChildrenT[T, U](cp, tree)(pf)(op))
     } else {
       collectZPathChildrenT[T, U](path, tree)(pf)(op)
     }    
@@ -180,8 +182,7 @@ trait ZTrees {
   def collectZPathChildrenT[T, U](path: ZPath, tree: Tree[T])(
       pf: PartialFunction[Tree[T], U])
       (implicit op: ZPathClass[T]): Stream[(ZPath, U)] = {
-    val cp = path / op.name(tree.rootLabel)
-    tree.subForest.flatMap(collectZPathT(cp, _)(pf)(op))
+    tree.subForest.flatMap(collectZPathT(path, _)(pf)(op))
   }
 
   //
@@ -206,18 +207,19 @@ trait ZTrees {
   def collectZPathPT[T, U](path: ZPath, tree: Tree[T])(
       pf: PartialFunction[(ZPath, Tree[T]), U])
       (implicit op: ZPathClass[T]): Stream[(ZPath, U)] = {
+    val name = op.name(tree.rootLabel)
+    val cp = path / name
     if (pf.isDefinedAt((path, tree))) {
-      Stream.cons((path, pf.apply((path, tree))), collectZPathChildrenPT[T, U](path, tree)(pf)(op))
+      Stream.cons((cp, pf.apply((cp, tree))), collectZPathChildrenPT[T, U](cp, tree)(pf)(op))
     } else {
-      collectZPathChildrenPT[T, U](path, tree)(pf)(op)
+      collectZPathChildrenPT[T, U](cp, tree)(pf)(op)
     }    
   }
 
   def collectZPathChildrenPT[T, U](path: ZPath, tree: Tree[T])(
       pf: PartialFunction[(ZPath, Tree[T]), U])
       (implicit op: ZPathClass[T]): Stream[(ZPath, U)] = {
-    val cp = path / op.name(tree.rootLabel)
-    tree.subForest.flatMap(collectZPathPT(cp, _)(pf)(op))
+    tree.subForest.flatMap(collectZPathPT(path, _)(pf)(op))
   }
 }
 
