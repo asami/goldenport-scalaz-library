@@ -5,11 +5,15 @@ import Scalaz._
 
 /**
  * @since   Jan. 31, 2012
- * @version Jan. 31, 2012
+ * @version Feb.  2, 2012
  * @author  ASAMI, Tomoharu
  */
 case class ZPath(names: List[String]) {
   def /(name: String) = {
+    if (name == null) {
+      println("null")
+    }
+    require (name != null && name.nonEmpty, "ZPath#/: name component must not be empty.")
     ZPath(names ::: ZPath.string2names(name))
   }
 
@@ -20,8 +24,11 @@ case class ZPath(names: List[String]) {
   // first component is "" means absolute path
   def isAbsolute: Boolean = names.headOption.cata(_.isEmpty, false)
 
-  override def toString(): String = {
-    names.mkString("/")
+  override def toString(): String = qname
+
+  def qname: String = {
+    if (names.length == 1 && names.head.isEmpty) "/"
+    else names.mkString("/")
   }
 
   def suffix: Option[String] = {
@@ -39,7 +46,8 @@ object ZPath {
   implicit def zpathWrapper(s: Symbol): ZPath = ZPath(List(s.name))
 
   def apply(names: String): ZPath = {
-    ZPath(string2names(names))
+    if (names == null) ZPath(List(""))
+    else ZPath(string2names(names))
   }
 
   def string2names(names: String) = {
@@ -53,3 +61,5 @@ trait ZPathClass[M] {
 
 object ZPaths {
 }
+
+object ZPathRoot extends ZPath(List(""))
