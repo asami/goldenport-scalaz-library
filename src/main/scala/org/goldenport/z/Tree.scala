@@ -149,6 +149,43 @@ trait ZTrees {
   }
 
   //
+  def collectPathP[T, U](tree: Tree[T])(
+      pf: PartialFunction[(ZPath, T), U])
+      (implicit op: ZPathClass[T]): Stream[(String, U)] = {
+    collectZPathP(tree)(pf).map {
+      case (p, n) => (p.toString, n)
+    }
+  }
+
+  def collectZPathP[T, U](tree: Tree[T])(
+      pf: PartialFunction[(ZPath, T), U])
+      (implicit op: ZPathClass[T]): Stream[(ZPath, U)] = {
+    if (pf.isDefinedAt((ZPathRoot, tree.rootLabel))) {
+      Stream.cons((ZPathRoot, pf.apply((ZPathRoot, tree.rootLabel))), collectZPathChildrenP(ZPathRoot, tree)(pf)(op))
+    } else {
+      collectZPathChildrenP(ZPathRoot, tree)(pf)(op)
+    }
+  }
+
+  def collectZPathP[T, U](path: ZPath, tree: Tree[T])(
+      pf: PartialFunction[(ZPath, T), U])
+      (implicit op: ZPathClass[T]): Stream[(ZPath, U)] = {
+    val name = op.name(tree.rootLabel)
+    val cp = path / name
+    if (pf.isDefinedAt((cp, tree.rootLabel))) {
+      Stream.cons((cp, pf.apply((cp, tree.rootLabel))), collectZPathChildrenP[T, U](cp, tree)(pf)(op))
+    } else {
+      collectZPathChildrenP[T, U](path, tree)(pf)(op)
+    }    
+  }
+
+  def collectZPathChildrenP[T, U](path: ZPath, tree: Tree[T])(
+      pf: PartialFunction[(ZPath, T), U])
+      (implicit op: ZPathClass[T]): Stream[(ZPath, U)] = {
+    tree.subForest.flatMap(collectZPathP(path, _)(pf)(op))
+  }
+
+  //
   def collectPathT[T, U](tree: Tree[T])(
       pf: PartialFunction[Tree[T], U])
       (implicit op: ZPathClass[T]): Stream[(String, U)] = {
