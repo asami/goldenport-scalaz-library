@@ -246,7 +246,7 @@ trait ZTrees {
       (implicit op: ZPathClass[T]): Stream[(ZPath, U)] = {
     val name = op.name(tree.rootLabel)
     val cp = path / name
-    if (pf.isDefinedAt((path, tree))) {
+    if (pf.isDefinedAt((cp, tree))) {
       Stream.cons((cp, pf.apply((cp, tree))), collectZPathChildrenPT[T, U](cp, tree)(pf)(op))
     } else {
       collectZPathChildrenPT[T, U](cp, tree)(pf)(op)
