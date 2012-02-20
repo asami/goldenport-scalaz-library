@@ -5,10 +5,11 @@ import Scalaz._
 
 /**
  * @since   Jan. 14, 2012
- * @version Feb.  2, 2012
+ * @version Feb. 18, 2012
  * @author  ASAMI, Tomoharu
  */
 trait ZTrees {
+  val x: Int = 10
   def traverse[T, U](tree: Tree[T],
       enter: PartialFunction[Tree[T], U])(
       leave: PartialFunction[Tree[T], U] = Map.empty[Tree[T], U])(implicit mo: Monoid[U]): U = {
