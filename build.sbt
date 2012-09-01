@@ -4,9 +4,9 @@ name := "goldenport-scalaz-lib"
 
 version := "0.2.0"
 
-scalaVersion := "2.9.2"
+// scalaVersion := "2.9.2"
 
-crossScalaVersions := Seq("2.9.1", "2.9.2")
+crossScalaVersions := Seq("2.9.2", "2.9.1")
 
 scalacOptions += "-deprecation"
 
