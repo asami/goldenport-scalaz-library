@@ -4,18 +4,18 @@ import scalaz._
 import Scalaz._
 import scala.util.parsing.combinator.Parsers
 import org.scalatest.WordSpec
-import org.scalatest.matchers.ShouldMatchers
+import org.scalatest.Matchers
 import org.scalatest.junit.JUnitRunner
 import org.junit.runner.RunWith
 import org.goldenport.scalatest.ScalazMatchers
 
 /*
  * @since   Feb.  2, 2012
- * @version Feb.  2, 2012
+ * @version Feb.  5, 2014
  * @author  ASAMI, Tomoharu
  */
 @RunWith(classOf[JUnitRunner])
-class ZTreesSpec extends WordSpec with ShouldMatchers with ScalazMatchers {
+class ZTreesSpec extends WordSpec with Matchers with ScalazMatchers {
   import org.goldenport.z._
   import org.goldenport.Z._
 
@@ -26,7 +26,7 @@ class ZTreesSpec extends WordSpec with ShouldMatchers with ScalazMatchers {
   val tree = 1.node(2.node(3.leaf), 4.node(5.leaf))
 
   "ZTrees" should {
-    "collectPath" that {
+    "collectPath" which {
       "absolute path" in {
         val r = collectZPath(tree) {
           case n => n
@@ -34,7 +34,7 @@ class ZTreesSpec extends WordSpec with ShouldMatchers with ScalazMatchers {
         println(r.toList)
       }
     }
-    "collectZPath" that {
+    "collectZPath" which {
       "absolute path" in {
         val r = collectZPath(tree) {
           case n => n
@@ -42,7 +42,7 @@ class ZTreesSpec extends WordSpec with ShouldMatchers with ScalazMatchers {
         println(r.toList)
       }
     }
-    "collectPathP" that {
+    "collectPathP" which {
       "absolute path" in {
         val r = collectZPathP(tree) {
           case (p, n) => (p, n)
@@ -50,7 +50,7 @@ class ZTreesSpec extends WordSpec with ShouldMatchers with ScalazMatchers {
         println(r.toList)
       }
     }
-    "collectZPathP" that {
+    "collectZPathP" which {
       "absolute path" in {
         val r = collectZPathP(tree) {
           case (p, n) => (p, n)
@@ -58,7 +58,7 @@ class ZTreesSpec extends WordSpec with ShouldMatchers with ScalazMatchers {
         println(r.toList)
       }
     }
-    "collectPathT" that {
+    "collectPathT" which {
       "absolute path" in {
         val r = collectZPathT(tree) {
           case n => n.rootLabel
@@ -66,7 +66,7 @@ class ZTreesSpec extends WordSpec with ShouldMatchers with ScalazMatchers {
         println(r.toList)
       }
     }
-    "collectZPathT" that {
+    "collectZPathT" which {
       "absolute path" in {
         val r = collectZPathT(tree) {
           case n => n.rootLabel
@@ -74,7 +74,7 @@ class ZTreesSpec extends WordSpec with ShouldMatchers with ScalazMatchers {
         println(r.toList)
       }
     }
-    "collectPathPT" that {
+    "collectPathPT" which {
       "absolute path" in {
         val r = collectZPathPT(tree) {
           case (p, n) => (p, n.rootLabel)
@@ -82,7 +82,7 @@ class ZTreesSpec extends WordSpec with ShouldMatchers with ScalazMatchers {
         println(r.toList)
       }
     }
-    "collectZPathPT" that {
+    "collectZPathPT" which {
       "absolute path" in {
         val r = collectZPathPT(tree) {
           case (p, n) => (p, n.rootLabel)

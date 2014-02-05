@@ -1,11 +1,11 @@
 package org.goldenport.z
 
-import scalaz._
-import Scalaz._
+import scalaz._, Scalaz._, Tree._
 
 /**
  * @since   Jan. 14, 2012
- * @version Feb. 18, 2012
+ *  version Feb. 18, 2012
+ * @version Feb.  4, 2014
  * @author  ASAMI, Tomoharu
  */
 trait ZTrees {
@@ -20,11 +20,11 @@ trait ZTrees {
       monoid: U)(
       enter: PartialFunction[Tree[T], U],
       leave: PartialFunction[Tree[T], U] = Map.empty[Tree[T], U]): U = {
-    val m1 = if (enter.isDefinedAt(tree)) {
+    val m1: U = if (enter.isDefinedAt(tree)) {
       monoid |+| enter(tree)
     } else monoid
-    val m2 = tree.subForest.foldl(m1) {
-      (m, t) => foldTraverse(t, m)(enter, leave)
+    val m2: U = tree.subForest.foldLeft(m1) { (m, t) =>
+      foldTraverse(t, m)(enter, leave)
     }
     if (leave.isDefinedAt(tree)) {
       m2 |+| leave(tree)

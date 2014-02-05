@@ -1,11 +1,12 @@
 package org.goldenport.z
 
-import scalaz._
-import Scalaz._
+import scala.language.implicitConversions
+import scalaz._, Scalaz._
 
 /**
  * @since   Jan. 31, 2012
- * @version Feb.  2, 2012
+ *  version Feb.  2, 2012
+ * @version Feb.  4, 2014
  * @author  ASAMI, Tomoharu
  */
 case class ZPath(names: List[String]) {
